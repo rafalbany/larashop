@@ -105,7 +105,7 @@ return [
 
     'key' => env('APP_KEY', 'inesindinemwanawabambuyabakoiwe'),
 
-    'cipher' => 'AES-256-CBC',
+    'cipher' => 'AES-128-CBC',
 
     /*
     |--------------------------------------------------------------------------
