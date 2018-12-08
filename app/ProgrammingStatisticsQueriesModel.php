@@ -14,7 +14,7 @@ class ProgrammingStatisticsQueriesModel extends BaseModel {
         $gtxt = explode(' ',$expl_text);
         $count = count($gtxt);
         $string = htmlentities($gtxt[$count-2], null, 'utf-8');
-        $content = str_replace("&nbsp;", "", $string);
+        $content = str_replace(["&nbsp;","."], "", $string);
         $content = html_entity_decode($content);
         
         return str_replace(' ','',(str_replace(',','',$content)));
