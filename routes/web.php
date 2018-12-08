@@ -98,6 +98,8 @@ Route::get('/checkout', [
     'uses' => 'Front@checkout'
 ]);
 
+Route::get('/cron/getprogrammingstats','CronActions@downloadProgrammingStatistics');
+
 
 
 
