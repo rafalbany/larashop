@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\ProgrammingStatisticsPlacesModel;
+use App\ProgrammingStatisticsQueriesModel;
+
 use App\Brand;
 use App\Category;
 use App\Product;
@@ -24,6 +27,20 @@ class CronActions extends Controller {
     }
     
     public static function getProgrammingStats() {
-        die('1sdf');
+        
+        $dev_stat_places = ProgrammingStatisticsPlacesModel::get();
+        $dev_stat_queries = ProgrammingStatisticsQueriesModel::get();
+        
+        foreach($dev_stat_places as $place) {
+            foreach($dev_stat_queries as $query) {
+                $site = $place->link;
+                $qry_str = "q={$query->query}";   
+                $url = $site.$qry_str;
+                $count_of_jobs = ProgrammingStatisticsQueriesModel::getCountOfJobsFromQuery($url);
+                die(var_dump($count_of_jobs));
+            }
+        }
+        
+        
     }
 }
