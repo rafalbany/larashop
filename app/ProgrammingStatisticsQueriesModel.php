@@ -13,6 +13,10 @@ class ProgrammingStatisticsQueriesModel extends BaseModel {
         $expl_text = substr($expl_text[1],0,30);
         $gtxt = explode(' ',$expl_text);
         $count = count($gtxt);
-        return str_replace(',','',$gtxt[$count-2]);
+        $string = htmlentities($gtxt[$count-2], null, 'utf-8');
+        $content = str_replace("&nbsp;", "", $string);
+        $content = html_entity_decode($content);
+        
+        return str_replace(' ','',(str_replace(',','',$content)));
     }
 }

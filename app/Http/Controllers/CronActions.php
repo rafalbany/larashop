@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ProgrammingStatisticsPlacesModel;
 use App\ProgrammingStatisticsQueriesModel;
-
-use App\Brand;
-use App\Category;
-use App\Product;
-use App\User;
+use App\ProgrammingStatisticsModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -22,11 +18,11 @@ class CronActions extends Controller {
     
     public function downloadProgrammingStatistics() {
        
-        $stats = self::getProgrammingStats();
-        
+        self::saveProgrammingStats();
+        die('sukces');
     }
     
-    public static function getProgrammingStats() {
+    public static function saveProgrammingStats() {
         
         $dev_stat_places = ProgrammingStatisticsPlacesModel::get();
         $dev_stat_queries = ProgrammingStatisticsQueriesModel::get();
@@ -37,10 +33,13 @@ class CronActions extends Controller {
                 $qry_str = "q={$query->query}";   
                 $url = $site.$qry_str;
                 $count_of_jobs = ProgrammingStatisticsQueriesModel::getCountOfJobsFromQuery($url);
-                die(var_dump($count_of_jobs));
+                $stat_dev = new ProgrammingStatisticsModel();
+                $stat_dev->lang = $query->lang;
+                $stat_dev->count = $count_of_jobs;
+                $stat_dev->place = $place->place;
+                $stat_dev->stat_date = date('Y-m-d G:i:s');
+                $stat_dev->save();
             }
         }
-        
-        
     }
 }
