@@ -5,8 +5,8 @@
     <canvas id="line-chart" width="5" height="5"></canvas>
     <style>
         #line-chart {
-            width:95% !important;
-            height:80% !important;
+            width:85% !important;
+            height:50% !important;
         }
     </style>
     <script type="text/javascript">

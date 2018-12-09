@@ -6,6 +6,8 @@ use App\Brand;
 use App\Category;
 use App\Product;
 use App\User;
+use App\ProgrammingStatisticsModel;
+use App\ProgrammingStatisticsQueriesModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -85,7 +87,29 @@ class Front extends Controller {
     }
     
     public function dev_stats() {
-        return view('plot', array('labels'=>['Mirek','Jurek'],'data'=>[],'page' => 'dev-stats'));
+        
+        $labels = ProgrammingStatisticsModel::select([\DB::raw('date(stat_date) AS st_date')])->groupBy('st_date')->pluck('st_date')->toArray();
+        $days = ProgrammingStatisticsModel::select([\DB::raw('concat(date(stat_date),"-",lang) AS st_lang'),'count'])->where('place','Germany')->get();
+        $days = $days->keyBy('st_lang')->toArray();
+        $languages = ProgrammingStatisticsQueriesModel::select(['lang'])->get()->keyBy('lang')->toArray();
+        
+        $arr = [];
+        $i = 0;
+        foreach($languages as $key=>$val) {
+            $arr[$i] = ['label'=>$val['lang'],'data'=>[]];
+            $j=0;
+            foreach($labels as $label) {
+                if(isset($days[$label.'-'.$key])) {
+                    $arr[$i]['data'][$j] = $days[$label.'-'.$key]["count"];
+                } else {
+                    $arr[$i]['data'][$j] = null;
+                }
+                $j++;
+            }
+            $i++;
+        }
+        
+        return view('plot', array('labels'=>$labels,'data'=>$arr,'page' => 'dev-stats'));
     }
 
     public function login() {
