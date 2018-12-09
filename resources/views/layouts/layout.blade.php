@@ -92,6 +92,7 @@
                                 <li><a href="{{url('products')}}" {{$page == 'products' ? 'class=active' : ''}}>Products</a></li>
                                 <li><a href="{{url('blog')}}" {{$page == 'blog' ? 'class=active' : ''}}>Blog</a></li>
                                 <li><a href="{{url('contact-us')}}" {{$page == 'contact_us' ? 'class=active' : ''}}>Contact Us</a></li>
+                                <li><a href="{{url('dev-stats')}}" {{$page == 'dev-stats' ? 'class=active' : ''}}>Developer Statistics</a></li>
                             </ul>
                         </div>
                     </div>

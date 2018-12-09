@@ -83,6 +83,10 @@ class Front extends Controller {
     public function contact_us() {
         return view('contact_us', array('title' => 'Welcome','description' => '','page' => 'contact_us'));
     }
+    
+    public function dev_stats() {
+        return view('plot', array('labels'=>['Mirek','Jurek'],'data'=>[],'page' => 'dev-stats'));
+    }
 
     public function login() {
         return view('login', array('title' => 'Welcome','description' => '','page' => 'home'));
