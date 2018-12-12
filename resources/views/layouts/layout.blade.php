@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <style>
+            ul li ul {
+                display: none;
+            }
+            ul li:hover ul {
+                display: block;
+            }
+            .mainmenu ul li {
+                padding-right: 15px !important;
+                padding-left: 15px !important;
+            }
+        </style>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
@@ -92,7 +104,21 @@
                                 <li><a href="{{url('products')}}" {{$page == 'products' ? 'class=active' : ''}}>Products</a></li>
                                 <li><a href="{{url('blog')}}" {{$page == 'blog' ? 'class=active' : ''}}>Blog</a></li>
                                 <li><a href="{{url('contact-us')}}" {{$page == 'contact_us' ? 'class=active' : ''}}>Contact Us</a></li>
-                                <li><a href="{{url('dev-stats')}}" {{$page == 'dev-stats' ? 'class=active' : ''}}>Developer Statistics</a></li>
+                                <li><a href="{{url('dev-stats')}}" {{$page == 'dev-stats' ? 'class=active' : ''}}>Developer Statistics</a>
+                                    <ul>
+                                        <li><a href="{{url('dev-stats/usa')}}">USA</a></li>
+                                        <li><a href="{{url('dev-stats/uk')}}">UK</a></li>
+                                        <li><a href="{{url('dev-stats/france')}}">France</a></li>
+                                        <li><a href="{{url('dev-stats/italy')}}">Italy</a></li>
+                                        <li><a href="{{url('dev-stats/germany')}}">Germany</a></li>
+                                        <li><a href="{{url('dev-stats/poland')}}">Poland</a></li>
+                                        <li><a href="{{url('dev-stats/warsaw')}}">Warsaw</a></li>
+                                        <li><a href="{{url('dev-stats/london')}}">London</a></li>
+                                        <li><a href="{{url('dev-stats/new york')}}">New York</a></li>
+                                        <li><a href="{{url('dev-stats/berlin')}}">Berlin</a></li>
+                                        <li><a href="{{url('dev-stats')}}">Overall</a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div>
                     </div>

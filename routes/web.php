@@ -40,7 +40,7 @@ Route::get('/products/brands/{name}/{category?}','Front@product_brands');
 Route::get('/blog','Front@blog');
 Route::get('/blog/post/{id}','Front@blog_post');
 Route::get('/contact-us','Front@contact_us');
-Route::get('/dev-stats','Front@dev_stats');
+Route::get('/dev-stats/{place?}','Front@dev_stats');
 //Route::get('/login','Front@login');
 Route::get('login', ['as' => 'login', 'uses' => 'Front@login']);
 Route::get('/logout','Front@logout');

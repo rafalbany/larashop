@@ -86,10 +86,10 @@ class Front extends Controller {
         return view('contact_us', array('title' => 'Welcome','description' => '','page' => 'contact_us'));
     }
     
-    public function dev_stats() {
+    public function dev_stats($place=null) {
         
         $labels = ProgrammingStatisticsModel::select([\DB::raw('date(stat_date) AS st_date')])->groupBy('st_date')->pluck('st_date')->toArray();
-        $days = ProgrammingStatisticsModel::select([\DB::raw('concat(date(stat_date),"-",lang) AS st_lang'),'count'])->where('place','Germany')->get();
+        $days = ProgrammingStatisticsModel::select([\DB::raw('concat(date(stat_date),"-",lang) AS st_lang'),\DB::raw('sum(count) AS count')])->where('place','like','%'.$place.'%')->groupBy('st_lang')->get();
         $days = $days->keyBy('st_lang')->toArray();
         $languages = ProgrammingStatisticsQueriesModel::select(['lang'])->get()->keyBy('lang')->toArray();
         
