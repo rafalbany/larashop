@@ -33,12 +33,14 @@ class CronActions extends Controller {
                 $qry_str = "q={$query->query}";   
                 $url = $site.$qry_str;
                 $count_of_jobs = ProgrammingStatisticsQueriesModel::getCountOfJobsFromQuery($url);
-                $stat_dev = new ProgrammingStatisticsModel();
-                $stat_dev->lang = $query->lang;
-                $stat_dev->count = $count_of_jobs;
-                $stat_dev->place = $place->place;
-                $stat_dev->stat_date = date('Y-m-d G:i:s');
-                $stat_dev->save();
+                if($count_of_jobs) {
+                    $stat_dev = new ProgrammingStatisticsModel();
+                    $stat_dev->lang = $query->lang;
+                    $stat_dev->count = $count_of_jobs;
+                    $stat_dev->place = $place->place;
+                    $stat_dev->stat_date = date('Y-m-d G:i:s');
+                    $stat_dev->save();
+                }
             }
         }
     }
