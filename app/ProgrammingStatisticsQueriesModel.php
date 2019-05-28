@@ -14,7 +14,10 @@ class ProgrammingStatisticsQueriesModel extends BaseModel {
             $expl_text = substr($expl_text[1],0,30);
             $gtxt = explode(' ',$expl_text);
             $count = count($gtxt);
-            $string = htmlentities($gtxt[$count-2], null, 'utf-8');
+            $numb_first = str_replace(["&nbsp;",",","."], "",$gtxt[$count-2]);
+            $numb_sec = str_replace(["&nbsp;",",","."], "",$gtxt[$count-1]);
+            $number = is_numeric($numb_first) ? $numb_first : $numb_sec;
+            $string = htmlentities($number, null, 'utf-8');
             $content = str_replace(["&nbsp;","."], "", $string);
             $content = html_entity_decode($content);
 
