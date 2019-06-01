@@ -14,14 +14,21 @@ class ProgrammingStatisticsQueriesModel extends BaseModel {
             $expl_text = substr($expl_text[1],0,30);
             $gtxt = explode(' ',$expl_text);
             $count = count($gtxt);
-            $numb_first = str_replace(["&nbsp;",",","."], "",$gtxt[$count-2]);
-            $numb_sec = str_replace(["&nbsp;",",","."], "",$gtxt[$count-1]);
-            $number = is_numeric($numb_first) ? $numb_first : $numb_sec;
-            $string = htmlentities($number, null, 'utf-8');
+            $numb_first = str_replace(["&nbsp;",",","."," "], "",$gtxt[$count-2]);
+            $numb_sec = str_replace(["&nbsp;",",","."," "], "",$gtxt[$count-1]);
+
+            $string = htmlentities($numb_first, null, 'utf-8');
             $content = str_replace(["&nbsp;","."], "", $string);
             $content = html_entity_decode($content);
-
-            return str_replace(' ','',(str_replace(',','',$content)));
+            if(is_numeric($content)) {
+                return str_replace(' ','',(str_replace(',','',$content)));
+            }
+            $string = htmlentities($numb_sec, null, 'utf-8');
+            $content = str_replace(["&nbsp;","."], "", $string);
+            $content = html_entity_decode($content);
+            if(is_numeric($content)) {
+                return str_replace(' ','',(str_replace(',','',$content)));
+            }
         } catch(\Exception $ex) {
             return die(var_dump($ex->getMessage()));
         }
