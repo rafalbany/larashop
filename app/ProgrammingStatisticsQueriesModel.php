@@ -19,21 +19,15 @@ class ProgrammingStatisticsQueriesModel extends BaseModel {
         try {
             $gtxt = explode(' ',$expl_text);
             $count = count($gtxt);
-            $numb_first = str_replace(["&nbsp;",",","."," "], "",$gtxt[$count-2]);
-            $numb_sec = str_replace(["&nbsp;",",","."," "], "",$gtxt[$count-1]);
+            $number = '';
 
-            $string = htmlentities($numb_first, null, 'utf-8');
-            $content = str_replace(["&nbsp;","."], "", $string);
-            $content = html_entity_decode($content);
-            if(is_numeric($content)) {
-                return str_replace(' ','',(str_replace(',','',$content)));
+            for ($x = ($count - 1); $x > 2; $x--) {
+                $element = str_replace(["&nbsp;",",","."," "], "",$gtxt[$x]);
+                if(is_numeric($element)) {
+                    $number = $element . $number;
+                }
             }
-            $string = htmlentities($numb_sec, null, 'utf-8');
-            $content = str_replace(["&nbsp;","."], "", $string);
-            $content = html_entity_decode($content);
-            if(is_numeric($content)) {
-                return str_replace(' ','',(str_replace(',','',$content)));
-            }
+            return $number;
         } catch(\Exception $ex) {
             return die(var_dump($ex->getMessage()));
         }
