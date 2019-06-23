@@ -2,16 +2,21 @@
 
 namespace App;
 
+use PHPHtmlParser\Dom;
+
 class ProgrammingStatisticsQueriesModel extends BaseModel {
     protected $primaryKey = 'id';
     protected $table = 'programming_statistics_queries';
     protected $fillable = ['lang','query'];
     
     public static function getCountOfJobsFromQuery($url) {
-        $zm = file_get_contents($url);
-        $expl_text = explode('id="searchCount">',$zm);
+
+        $dom = new Dom();
+        $dom->loadFromUrl($url);
+        $element = $dom->find('#searchCount');
+
+        $expl_text = $element->text;
         try {
-            $expl_text = substr($expl_text[1],0,30);
             $gtxt = explode(' ',$expl_text);
             $count = count($gtxt);
             $numb_first = str_replace(["&nbsp;",",","."," "], "",$gtxt[$count-2]);
