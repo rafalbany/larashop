@@ -13,7 +13,7 @@ class ProgrammingStatisticsQueriesModel extends BaseModel {
 
         $dom = new Dom();
         $dom->loadFromUrl($url);
-        $element = $dom->find('#searchCount');
+        $element = $dom->find('#searchCountPages');
 
         $expl_text = $element->text;
         try {
