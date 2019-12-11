@@ -185,7 +185,67 @@ class Front extends Controller {
 
            $groupex = self::checkGroupEx($ldap, $userdn, $groupdn);
 
-           die(var_dump($groupex));
+           $filter ="(cn=*)";
+           $justthese = array('cn');
+
+           $result=ldap_list($ldap, $base_dn, $filter, $justthese) or die("No search data found.");
+
+           $info = ldap_get_entries($ldap, $result);
+
+           //
+
+//           $groupdn = self::getDN($ldap, 'Accounting', $base_dn);
+//           $result = ldap_search($ldap, $base_dn, "(memberOf:1.2.840.113556.1.4.1941:={$groupdn})");
+           // ten filter dziala
+           //dla zagniezdzenia, np tutaj jest czlonkiem grupy Users bo nalezy do podgrupy tej grupy - tutaj np IT
+
+//           die(var_dump($groupdn));
+
+//           $result = ldap_search($ldap, $base_dn, "(&(objectClass=user)(memberOf:1.2.840.113556.1.4.1941:={$groupdn}))");
+//
+//           $info = ldap_get_entries($ldap, $result);
+
+//           die(var_dump($info));
+
+           $groups_arr = [];
+
+           for ($i=0; $i < $info["count"]; $i++) {
+               $groups_arr[] = $info[$i]["cn"][0];
+           }
+
+           $groupdn = self::getDN($ldap, 'Users', $base_dn);
+           $result=ldap_list($ldap, $groupdn, $filter, $justthese) or die("No search data found.");
+
+           $info = ldap_get_entries($ldap, $result);
+
+           die(var_dump($info));
+
+           /////
+
+
+           //////////
+
+           die(var_dump($groups_arr));
+
+           $exists_in_groups_arr = [];
+           foreach($groups_arr as $groupname) {
+               $groupdn = self::getDN($ldap, $groupname, $base_dn);
+
+               //$result = ldap_search($ldap, $base_dn, "(memberOf:1.2.840.113556.1.4.1941:={$groupdn})"); // ten filter dziala
+               //dla zagniezdzenia, np tutaj jest czlonkiem grupy Users bo nalezy do podgrupy tej grupy - tutaj np IT
+
+//               $info = ldap_get_entries($ldap, $result);
+
+               if(self::checkGroupEx($ldap, $userdn, $groupdn)) {
+                   $exists_in_groups_arr[] = $groupname;
+               }
+
+               if($info['count']) {
+                   $exists_in_groups_arr[] = $groupname;
+               }
+           }
+
+           die(var_dump($exists_in_groups_arr));
 
 
            die(var_dump($groupdn));
