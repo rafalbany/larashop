@@ -192,7 +192,24 @@ class Front extends Controller {
 
            $info = ldap_get_entries($ldap, $result);
 
-           //
+           /////////// TEN KAWAŁEK KODU ZCZYTUJE GRUPY DO KTORYCH NALEZY USER ///////////
+
+           $filter = "(&(objectClass=group)(member:1.2.840.113556.1.4.1941:=$userdn))";
+           $search = ldap_search($ldap, $base_dn, $filter, array("cn"));
+
+           $allGroups = ldap_get_entries($ldap, $search);
+
+           $all_groups_arr = [];
+
+           for ($i=0; $i < $allGroups["count"]; $i++) {
+               $all_groups_arr[] = $allGroups[$i]["cn"][0];
+           }
+
+           die(var_dump($all_groups_arr));
+
+           //https://stackoverflow.com/questions/38364071/display-all-active-directory-groups-that-a-user-is-a-member-of-recursively
+
+           ////////// KONIEC//////////////
 
 //           $groupdn = self::getDN($ldap, 'Accounting', $base_dn);
 //           $result = ldap_search($ldap, $base_dn, "(memberOf:1.2.840.113556.1.4.1941:={$groupdn})");
