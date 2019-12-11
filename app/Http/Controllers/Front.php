@@ -62,10 +62,10 @@ class Front extends Controller {
 * entry specified by samaccountname and returns its DN or epmty
 * string on failure.
 */
-    function getDN($ad, $samaccountname, $basedn) {
+    static function getDN($ad, $samaccountname, $basedn) {
         $attributes = array('dn');
         $result = ldap_search($ad, $basedn,
-            "(samaccountname={$samaccountname})", $attributes);
+            "(sAMAccountName={$samaccountname})", $attributes);
         if ($result === FALSE) { return ''; }
         $entries = ldap_get_entries($ad, $result);
         if ($entries['count']>0) { return $entries[0]['dn']; }
@@ -75,7 +75,7 @@ class Front extends Controller {
     /*
     * This function retrieves and returns CN from given DN
     */
-    function getCN($dn) {
+    static function getCN($dn) {
         preg_match('/[^,]*/', $dn, $matchs, PREG_OFFSET_CAPTURE, 3);
         return $matchs[0][0];
     }
@@ -84,7 +84,7 @@ class Front extends Controller {
     * This function checks group membership of the user, searching only
     * in specified group (not recursively).
     */
-    function checkGroup($ad, $userdn, $groupdn) {
+    static function checkGroup($ad, $userdn, $groupdn) {
         $attributes = array('members');
         $result = ldap_read($ad, $userdn, "(memberof={$groupdn})", $attributes);
         if ($result === FALSE) { return FALSE; };
@@ -96,7 +96,7 @@ class Front extends Controller {
     * This function checks group membership of the user, searching
     * in specified group and groups which is its members (recursively).
     */
-    function checkGroupEx($ad, $userdn, $groupdn) {
+    static function checkGroupEx($ad, $userdn, $groupdn) {
         $attributes = array('memberof');
         $result = ldap_read($ad, $userdn, '(objectclass=*)', $attributes);
         if ($result === FALSE) { return FALSE; };
@@ -105,7 +105,7 @@ class Front extends Controller {
         if (empty($entries[0]['memberof'])) { return FALSE; } else {
             for ($i = 0; $i < $entries[0]['memberof']['count']; $i++) {
                 if ($entries[0]['memberof'][$i] == $groupdn) { return TRUE; }
-                elseif (checkGroupEx($ad, $entries[0]['memberof'][$i], $groupdn)) { return TRUE; };
+                elseif (self::checkGroupEx($ad, $entries[0]['memberof'][$i], $groupdn)) { return TRUE; };
             };
         };
         return FALSE;
@@ -115,26 +115,96 @@ class Front extends Controller {
         if(empty($user) || empty($password)) return false;
 
         $adServer = "ldap://52.156.251.106";
-
-        $ldap = ldap_connect($adServer);
         $username = 'mary.smith';
         $password = 'Pass@word1!';
 
         $ldaprdn = 'mycompany' . "\\" . $username;                 //działa
         $ldaprdn = 'CN=Mary Smith,CN=Users,DC=mycompany,DC=local'; //działa
-
         $domain = 'mycompany.local';
         $ldaprdn = "{$username}@{$domain}";                        //działa
 
+
+        ////////////////TESTY//////////
+
+        $adServer = "www.zflexldap.com";
+        $username = 'guest2';
+        $password = 'guest2password';
+
+        $ldaprdn = 'mycompany' . "\\" . $username;                 //działa
+        $ldaprdn = 'CN=Mary Smith,CN=Users,DC=mycompany,DC=local'; //działa
+        $domain = 'zflexsoftware.com';
+        $ldaprdn = "{$username}@{$domain}";                        //działa
+        $ldaprdn = "cn=ro_admin,ou=sysadmins,dc=zflexsoftware,dc=com";
+
+        $ldaprdn = "uid=guest2,ou=users,ou=guests,dc=zflexsoftware,dc=com";
+
+//        $base_dn = 'dc=zflexsoftware,dc=com';
+//
+//        $ldaprdn = 'zflexldap' . "\\" . $username;
+
+        $username = 'einstein';
+        $password = 'password';
+        $account_suffix = '@forumsys.com';
+        $adServer = 'ldap://52.87.186.93';
+
+        $ldaprdn = 'uid=einstein,dc=example,dc=com';
+
+        $basedn = 'dc=example,dc=com';
+        $user = 'einstein';
+
+
+
+        $adServer = "ldap://52.156.251.106";
+        $username = 'mary.smith';
+        $password = 'Pass@word1!';
+
+        $ldaprdn = 'mycompany' . "\\" . $username;                 //działa
+        $ldaprdn = 'CN=Mary Smith,CN=Users,DC=mycompany,DC=local'; //działa
+        $domain = 'mycompany.local';
+        $ldaprdn = "{$username}@{$domain}";
+
+        /////////////////////////
+
+        $ldap = ldap_connect($adServer);
+
+
         ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+        $bind = ldap_bind($ldap, $ldaprdn, $password);
 
-        $bind = @ldap_bind($ldap, $ldaprdn, $password);
+       if ($bind) {
 
-        if ($bind) {
+           $base_dn = 'DC=mycompany,DC=local';
+           $username = 'mary.smith';
+           $groupname = 'IT';
+
+           //tej metody mozna uzyc dopiero po wbindowaniu sie na serwer
+
+           $userdn = self::getDN($ldap, $username, $base_dn);
+           $groupdn = self::getDN($ldap, $groupname, $base_dn);
+
+           $groupex = self::checkGroupEx($ldap, $userdn, $groupdn);
+
+           die(var_dump($groupex));
+
+
+           die(var_dump($groupdn));
+
             $filter="(sAMAccountName=$username)";
-            $result = ldap_search($ldap,"dc=mycompany,dc=local",$filter);
+//            $filter="cn=*";
+            $result = ldap_search($ldap,$base_dn,$filter);
             $info = ldap_get_entries($ldap, $result);
+
+            die(var_dump($info));
+
+           // Loop over
+//           for ($i=0; $i < $info['count']; $i++) {
+//               if(!empty($info[$i]['member'])) {
+//                   print_r($info[$i]['member']);
+//                   echo "\n\n";
+//               }
+//           }
+//           die('dg');
 
             for ($i=0; $i<$info["count"]; $i++)
             {
