@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Brand;
 use App\Category;
+use App\Http\Plugins\LDAPService\LDAPService;
+use App\Http\Plugins\LDAPService\LDAPUser;
 use App\Product;
 use App\User;
 use App\ProgrammingStatisticsModel;
@@ -114,17 +116,28 @@ class Front extends Controller {
     public static function auth($user, $password) {
         if(empty($user) || empty($password)) return false;
 
-        $adServer = "ldap://52.156.251.106";
-        $username = 'mary.smith';
-        $password = 'Pass@word1!';
+        $adService = new LDAPService();
 
-        $ldaprdn = 'mycompany' . "\\" . $username;                 //działa
-        $ldaprdn = 'CN=Mary Smith,CN=Users,DC=mycompany,DC=local'; //działa
-        $domain = 'mycompany.local';
-        $ldaprdn = "{$username}@{$domain}";                        //działa
+        $adService
+            ->setHost('ldap://52.156.251.106')
+            ->setPort('389')
+            ->setBaseDn('DC=mycompany,DC=local')
+        ;
 
+        $adService->setAuthUser(new LDAPUser(
+            'mary.smith',
+            'Pass@word1!',
+            'CN=Mary Smith,CN=Users,DC=mycompany,DC=local'
+        ));
 
-        ////////////////TESTY//////////
+        $userToFind = new LDAPUser('mary.smith','Pass@word1!');
+
+        $userToFindDn = $adService->authenticate($adService->getAuthUser(), $userToFind, false);
+        $userToFind->setUserDn($userToFindDn);
+
+        $allGroups = $adService->getUserGroups($userToFind);
+
+        die(var_dump($allGroups));
 
         $adServer = "www.zflexldap.com";
         $username = 'guest2';
