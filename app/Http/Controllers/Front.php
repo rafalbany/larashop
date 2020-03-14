@@ -13,6 +13,7 @@ use App\ProgrammingStatisticsQueriesModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use App\Http\Services\PayPalService;
 use App\Http\Controllers\Controller;
 
 class Front extends Controller {
@@ -133,6 +134,9 @@ class Front extends Controller {
         $userToFind = new LDAPUser('mary.smith','Pass@word1!');
 
         $userToFindDn = $adService->authenticate($adService->getAuthUser(), $userToFind, false);
+
+        die(var_dump($adService->getErrorMessage()));
+
         $userToFind->setUserDn($userToFindDn);
 
         $allGroups = $adService->getUserGroups($userToFind);
@@ -505,6 +509,65 @@ class Front extends Controller {
     }
 
     public function products() {
+		
+		$sandbox = false;
+		if($sandbox) {
+			$client_id = 'Ad7OHkznl3f68kb05s5yUm2YU7Kjz1pXGEQjfQDBfIAG6bc6ZoUy9wLDpCnkoEKcttCaTSjb4AvQmFPR';
+			$client_secret = 'EPu31aVfXYzYZ9iRL1YRUbY73doFSWa1r_DIr_zBrUeUDhUNdVF_TnpG8IuIHBqgZht9W2djCLNqIspT';
+		} else {
+			$client_id = 'Af33wmEDX6AEKv0uCnNSRADtaL6oIFvYlIE0alp0tLjAllkZBmMB2SDd3V13p_eUQ0rLG0ojAqX7bc_n';
+			$client_secret = 'EIfGUEDEBUnf5DggFtvSY8TA26WOlN5nfV73r1C5xfGBk01lBw2fRVd_xojUragK58albtFWzpDmu_ev';
+		}
+
+		$payment = new PayPalService();
+        $payment->setConfig([
+			'auth_client_id' => $client_id,
+			'auth_client_secret' => $client_secret,
+			'sandbox' => $sandbox
+        ]);
+
+       $products_arr = [];
+	   $products_arr[] = [
+			"name" => 'product1',
+			"unitPrice" => number_format(3.5,2,'.',''),
+			"quantity" => number_format(2,0,',','')
+        ];
+		
+		$result_currency = $payment->setCurrencyCode('PLN');
+        $result_country = $payment->setCountryCode('PL');
+        $result_langcode = $payment->setLangCode('pl');
+
+        if($result_currency&&$result_country&&$result_langcode) {
+			$payment->registerPayment(
+				'order1212'.'_'.time(),
+				7,
+				0,
+				'Zamówienie nr: ' . 'blabla',
+				\Request::ip(),
+				12,
+				'luf@op.pl',
+				'Robert',
+				'Jankowski',
+				'500123321',
+				'http://larashop.local/payment_success_info',
+				'http://larashop.local/shop/payresponse/'.'32324ddrgrg',
+				$products_arr
+			);
+		}
+
+
+
+		die('rrrt');
+
+
+
+
+
+
+
+
+
+
 
 
         self::auth('einstein','password');
